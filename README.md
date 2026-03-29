@@ -144,7 +144,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## 📧 Contact
 
 **Project Lead**: V.Sadvik Kumar - vadlasadvik99@gmail.com
-**Project Link**: [https://github.com/yourusername/neuro-mimesis](https://github.com/yourusername/neuro-mimesis)
+**Project Link**: https://github.com/sadvik-asus/Neuro-Mimesis
 
 ---
 *Created with ❤️ for the Cyber Security community.*
