@@ -84,7 +84,7 @@ When a breach is detected (Trust Score falls below the threshold), the system tr
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/neuro-mimesis.git
+git clone https://github.com/sadvik-asus/neuro-mimesis.git
 cd neuro-mimesis
 ```
 
