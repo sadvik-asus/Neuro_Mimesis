@@ -12,7 +12,7 @@
 
 ---
 
-## 🚀 Overview
+##  Overview
 
 Traditional security measures (passwords, 2FA) are often vulnerable once an intruder gains physical access to an unlocked workstation. Neuro-Mimesis solves this through **Continuous Authentication**. Instead of verifying once at login, it monitors identity throughout the entire session. If an unauthorized user is detected, the system doesn't just log the breach—it initiates an **Active Defense Protocol** to neutralize the threat.
 
@@ -21,7 +21,7 @@ The machine learns to "mimic" and recognize the user's specific cognitive-motor 
 
 ---
 
-## 🛠️ System Architecture
+##  System Architecture
 
 ![System Architecture](docs/architecture_diagram.png)
 
@@ -41,7 +41,7 @@ Neuro-Mimesis is built as a hybrid application, combining a high-performance OS-
 
 ---
 
-## ⚡ Key Features
+##  Key Features
 
 - **Behavioral Enrollment**: Record high-entropy mouse data to create a multi-dimensional "Cognitive Profile."
 - **Continuous Trust Model**: Maintains a "Humanity Score" every second.
