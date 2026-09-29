@@ -23,7 +23,7 @@ The machine learns to "mimic" and recognize the user's specific cognitive-motor 
 
 ## 🛠️ System Architecture
 
-![System Architecture](architecture_diagram.png)
+![System Architecture](docs/architecture_diagram.png)
 
 Neuro-Mimesis is built as a hybrid application, combining a high-performance OS-level background service with a premium web-based dashboard for visualization and management.
 
@@ -90,6 +90,8 @@ cd neuro-mimesis
 
 ### 2. Backend Setup
 ```bash
+cd backend
+
 # Create a virtual environment
 python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
@@ -100,15 +102,23 @@ pip install -r requirements.txt
 
 ### 3. Frontend Setup
 ```bash
+cd ../frontend
 npm install
 ```
 
 ### 4. Running the Project
-```bash
-# Start the Backend & Security Module
-python server.py
 
-# Start the Frontend Dashboard
+You will need two separate terminal windows:
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
+python server.py
+```
+
+**Terminal 2 (Frontend):**
+```bash
+cd frontend
 npm run dev
 ```
 
