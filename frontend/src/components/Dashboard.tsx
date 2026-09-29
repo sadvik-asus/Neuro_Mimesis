@@ -1,14 +1,15 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { ShieldCheck, ShieldAlert, RotateCcw, Lock, Camera, Siren, MapPin } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, RotateCcw, Lock, Camera, Siren, MapPin, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 interface DashboardProps {
     result: { score: number, isBot: boolean };
     onRetry: () => void;
+    onLogout: () => void;
 }
 
-export const Dashboard = ({ result, onRetry }: DashboardProps) => {
+export const Dashboard = ({ result, onRetry, onLogout }: DashboardProps) => {
     const { score, isBot } = result;
     const isAuth = !isBot && score > 60;
     const [notification, setNotification] = useState<{ message: string, subtext?: string, color: 'red' | 'orange' | 'green', icon?: any } | null>(null);
@@ -47,17 +48,14 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
     }, [trustScore]);
 
     const triggerActiveDefense = async () => {
-        // 1. Initial Alarm
         setNotification({
             message: "INTRUDER DETECTED",
             subtext: "INITIATING ACTIVE DEFENSE PROTOCOLS",
             color: 'red',
             icon: Siren
         });
-
         await new Promise(r => setTimeout(r, 2000));
 
-        // 2. Capture Evidence
         setNotification({
             message: "CAPTURING EVIDENCE",
             subtext: "SMILE FOR THE CAMERA 📸",
@@ -68,17 +66,14 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
 
         await new Promise(r => setTimeout(r, 2000));
 
-        // 3. Evidence Secured
         setNotification({
             message: "EVIDENCE SECURED",
             subtext: "UPLOADING TO SECURE SERVER...",
             color: 'green',
             icon: ShieldCheck
         });
-
         await new Promise(r => setTimeout(r, 1500));
 
-        // 4. Countdown Lock
         for (let i = 3; i > 0; i--) {
             setNotification({
                 message: `SYSTEM LOCK IN ${i}...`,
@@ -89,7 +84,6 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        // 5. Lock
         setNotification({
             message: "SYSTEM LOCKED",
             subtext: "ACCESS RESTRICTED",
@@ -97,8 +91,6 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
             icon: Lock
         });
         fetch('http://localhost:5000/api/test/lock', { method: 'POST' }).catch(console.error);
-
-        // Clear after a while (if user unlocks)
         setTimeout(() => setNotification(null), 5000);
     };
 
@@ -111,7 +103,6 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
         });
 
         fetch('http://localhost:5000/api/panic', { method: 'POST' }).catch(console.error);
-
         await new Promise(r => setTimeout(r, 2000));
 
         setNotification({
@@ -120,7 +111,6 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
             color: 'orange',
             icon: ShieldCheck
         });
-
         setTimeout(() => setNotification(null), 3000);
     };
 
@@ -143,12 +133,7 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div className="relative overflow-hidden rounded-lg p-4 bg-cyber-dark/80 border border-cyber-primary/50 shadow-[0_4px_20px_0_rgba(0,243,255,0.3)] backdrop-blur-md z-50 min-w-[200px]">
-                    <motion.div
-                        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 opacity-20 bg-[linear-gradient(45deg,transparent_25%,rgba(0,243,255,0.6)_50%,transparent_75%)] bg-[length:250%_250%] pointer-events-none"
-                    />
+                <div className="relative overflow-hidden rounded-xl p-4 glass-panel z-50 min-w-[200px]">
                     <div className="relative z-10">
                         <p className="font-orbitron font-bold text-cyber-primary glow-text mb-2 text-lg">
                             {label}
@@ -156,8 +141,8 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
                         <p className="font-mono text-xs text-white mb-4 opacity-90 leading-relaxed">
                             {metricExplanations[label] || "Analyzed cognitive metric"}
                         </p>
-                        <div className="space-y-1 font-mono text-[10px] uppercase">
-                            <div className="flex justify-between items-center text-cyber-primary opacity-60">
+                        <div className="space-y-2 font-mono text-xs uppercase">
+                            <div className="flex justify-between items-center text-cyber-primary opacity-80">
                                 <span>Baseline:</span>
                                 <span>{payload[0]?.value}%</span>
                             </div>
@@ -174,50 +159,48 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 max-w-5xl mx-auto w-full relative pt-24">
-
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 max-w-5xl mx-auto w-full relative pt-24 z-10">
             {/* CONTINUOUS TRUST BAR */}
-            <div className="fixed top-0 left-0 w-full bg-cyber-dark/90 border-b border-white/10 p-4 z-40 backdrop-blur-xl flex items-center gap-4">
-                <div className="flex items-center gap-2">
+            <div className="fixed top-0 left-0 w-full glass-panel border-b border-white/5 p-4 z-40 flex items-center gap-4 shadow-xl">
+                <div className="flex items-center gap-3">
                     <ShieldCheck className={`w-6 h-6 ${trustScore > 75 ? 'text-green-500' : trustScore > 40 ? 'text-yellow-500' : 'text-red-500'}`} />
-                    <span className="font-orbitron font-bold text-sm uppercase tracking-wider hidden md:inline-block">Continuous Trust Model</span>
+                    <span className="font-orbitron font-bold text-sm uppercase tracking-widest hidden md:inline-block">Continuous Trust Model</span>
                 </div>
-                <div className="flex-1 h-2 bg-black rounded-full overflow-hidden border border-white/10 relative">
+                <div className="flex-1 h-3 bg-black/50 rounded-full overflow-hidden border border-white/10 relative">
                     <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${trustScore}%` }}
                         transition={{ type: 'tween' }}
-                        className={`absolute top-0 left-0 h-full ${trustScore > 75 ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : trustScore > 40 ? 'bg-yellow-500 shadow-[0_0_10px_#eab308]' : 'bg-red-500 shadow-[0_0_10px_#ef4444]'}`}
+                        className={`absolute top-0 left-0 h-full ${trustScore > 75 ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : trustScore > 40 ? 'bg-yellow-500 shadow-[0_0_15px_#eab308]' : 'bg-red-500 shadow-[0_0_15px_#ef4444]'}`}
                     />
                 </div>
-                <div className="font-mono text-xl w-16 text-right font-bold">
+                <div className="font-mono text-xl w-16 text-right font-bold text-white tracking-widest">
                     {Math.round(trustScore)}%
                 </div>
+                <button 
+                    onClick={onLogout} 
+                    className="ml-auto flex items-center gap-2 px-5 py-2 bg-red-900/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500 hover:text-white hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all"
+                >
+                    <LogOut size={16} />
+                    <span className="hidden md:inline font-orbitron font-bold text-xs tracking-widest">LOGOUT</span>
+                </button>
             </div>
 
             {/* CINEMATIC NOTIFICATION OVERLAY */}
             <AnimatePresence>
                 {notification && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.1 }}
-                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md"
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-xl"
                     >
-                        <motion.div
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ repeat: Infinity, duration: 1 }}
-                        >
-                            {notification.icon && <notification.icon className={`w-32 h-32 mb-8 ${notification.color === 'red' ? 'text-red-500' : notification.color === 'orange' ? 'text-orange-500' : 'text-green-500'}`} />}
+                        <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1 }}>
+                            {notification.icon && <notification.icon className={`w-32 h-32 mb-8 ${notification.color === 'red' ? 'text-red-500 drop-shadow-[0_0_30px_rgba(239,68,68,0.5)]' : notification.color === 'orange' ? 'text-orange-500 drop-shadow-[0_0_30px_rgba(249,115,22,0.5)]' : 'text-green-500 drop-shadow-[0_0_30px_rgba(34,197,94,0.5)]'}`} />}
                         </motion.div>
-
-                        <h1 className={`text-6xl md:text-8xl font-black font-orbitron text-center mb-4 ${notification.color === 'red' ? 'text-red-600 drop-shadow-[0_0_30px_rgba(220,38,38,0.8)]' :
-                            notification.color === 'orange' ? 'text-orange-500 drop-shadow-[0_0_30px_rgba(249,115,22,0.8)]' :
-                                'text-green-500 drop-shadow-[0_0_30px_rgba(34,197,94,0.8)]'
-                            }`}>
+                        <h1 className={`text-6xl md:text-8xl font-black font-orbitron text-center mb-4 ${notification.color === 'red' ? 'text-red-500 glow-text' : notification.color === 'orange' ? 'text-orange-500 glow-text' : 'text-green-500 glow-text'}`}>
                             {notification.message}
                         </h1>
-
                         <p className="text-2xl font-mono text-white/80 tracking-widest text-center animate-pulse">
                             {notification.subtext}
                         </p>
@@ -226,25 +209,25 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
             </AnimatePresence>
 
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="w-full grid grid-cols-1 md:grid-cols-2 gap-8"
             >
                 {/* Left Col: Result */}
-                <div className="bg-cyber-dark/80 border border-t border-l border-white/10 rounded-xl p-8 flex flex-col items-center justify-center relative overflow-hidden backdrop-blur-xl">
-                    <div className={`absolute top-0 w-full h-1 ${isAuth ? 'bg-green-500' : 'bg-red-500'} shadow-[0_0_20px_rgba(0,255,0,0.5)]`} />
+                <div className="glass-panel rounded-3xl p-10 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div className={`absolute top-0 w-full h-1.5 ${isAuth ? 'bg-green-500' : 'bg-red-500'} shadow-[0_0_20px_rgba(0,255,0,0.5)]`} />
 
                     {isAuth ? (
-                        <ShieldCheck className="w-24 h-24 text-green-500 mb-4 drop-shadow-[0_0_15px_rgba(0,255,0,0.5)]" />
+                        <ShieldCheck className="w-24 h-24 text-green-500 mb-6 drop-shadow-[0_0_20px_rgba(34,197,94,0.5)]" />
                     ) : (
-                        <ShieldAlert className="w-24 h-24 text-red-500 mb-4 drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]" />
+                        <ShieldAlert className="w-24 h-24 text-red-500 mb-6 drop-shadow-[0_0_20px_rgba(239,68,68,0.5)]" />
                     )}
 
-                    <h2 className={`text-4xl font-orbitron font-bold mb-2 ${isAuth ? 'text-green-400' : 'text-red-500'}`}>
+                    <h2 className={`text-4xl font-orbitron font-bold mb-4 tracking-widest ${isAuth ? 'text-green-400' : 'text-red-500'}`}>
                         {isAuth ? 'ACCESS GRANTED' : 'ACCESS DENIED'}
                     </h2>
 
-                    <p className="text-xl font-mono mb-8 text-center text-gray-400">
+                    <p className="text-lg font-mono mb-10 text-center text-gray-400 leading-relaxed">
                         {isBot
                             ? "ARTIFICIAL LATENCY DETECTED. NO HUMAN ERROR FOUND."
                             : isAuth
@@ -252,80 +235,91 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
                                 : "BIOMETRIC ENTROPY MISMATCH. ANOMALY DETECTED."}
                     </p>
 
-                    <div className="w-full bg-gray-900 rounded-full h-4 mb-2 overflow-hidden border border-gray-700">
-                        <div
-                            className={`h-full transition-all duration-1000 ${score > 80 ? 'bg-green-500' : score > 50 ? 'bg-yellow-500' : 'bg-red-600'}`}
-                            style={{ width: `${score}%` }}
-                        />
+                    <div className="flex flex-col items-center gap-5 w-full mb-8">
+                        {/* Identity Match Score */}
+                        <div className="w-full">
+                             <div className="flex justify-between font-mono text-xs mb-1.5 text-gray-400 tracking-widest uppercase">
+                                 <span>Identity Match</span>
+                                 <span className="text-white font-bold">{Math.round(score)}%</span>
+                             </div>
+                             <div className="w-full bg-black/50 rounded-full h-2 overflow-hidden border border-white/5">
+                                 <div className={`h-full transition-all duration-1000 shadow-[0_0_10px_currentColor] ${score > 80 ? 'bg-cyber-primary text-cyber-primary' : score > 50 ? 'bg-yellow-500 text-yellow-500' : 'bg-red-500 text-red-500'}`} style={{ width: `${score}%` }} />
+                             </div>
+                        </div>
+
+                        {/* Humanity Score */}
+                        <div className="w-full">
+                             <div className="flex justify-between font-mono text-xs mb-1.5 text-gray-400 tracking-widest uppercase">
+                                 <span>Humanity Index</span>
+                                 <span className="text-white font-bold">{isBot ? '12%' : '99%'}</span>
+                             </div>
+                             <div className="w-full bg-black/50 rounded-full h-2 overflow-hidden border border-white/5">
+                                 <div className={`h-full transition-all duration-1000 shadow-[0_0_10px_currentColor] ${isBot ? 'bg-red-500 text-red-500' : 'bg-green-500 text-green-500'}`} style={{ width: isBot ? '12%' : '99%' }} />
+                             </div>
+                        </div>
                     </div>
-                    <div className="flex flex-col items-center gap-2 w-full">
-                        <p className="font-mono text-sm text-gray-500">HUMANITY SCORE: {Math.round(score)}/100</p>
+                    
+                    <div className="flex flex-col items-center gap-4 w-full">
                         {location && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="inline-flex items-center gap-2 px-3 py-1 bg-cyber-dark/50 border border-cyber-primary/30 rounded-full text-xs font-mono text-cyber-primary drop-shadow-[0_0_5px_rgba(0,243,255,0.3)]"
-                            >
-                                <MapPin size={12} className="animate-pulse" />
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-black/30 border border-cyber-primary/20 rounded-full text-xs font-mono text-cyber-primary shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+                                <MapPin size={14} className="animate-pulse" />
                                 <span>{location.toUpperCase()}</span>
-                            </motion.div>
+                            </div>
                         )}
                     </div>
 
                     <button
                         onClick={onRetry}
-                        className="mt-12 flex items-center gap-2 px-6 py-2 border border-white/20 hover:bg-white/5 rounded transition-all font-orbitron text-sm uppercase tracking-wider"
+                        className="mt-12 flex items-center gap-3 px-8 py-3 glass-panel rounded-xl hover:border-cyber-primary/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all font-orbitron font-bold text-sm uppercase tracking-widest"
                     >
-                        <RotateCcw size={16} /> Re-Initialize
+                        <RotateCcw size={18} className="text-cyber-primary" /> Re-Initialize
                     </button>
                 </div>
 
                 {/* Right Col: Viz */}
-                <div className="bg-cyber-dark/80 border border-t border-l border-white/10 rounded-xl p-6 backdrop-blur-xl flex flex-col relative overflow-hidden group">
-                    <h3 className="text-xl font-orbitron text-cyber-primary mb-6 flex items-center gap-2 relative z-10">
-                        <span className="w-2 h-8 bg-cyber-primary block" />
+                <div className="glass-panel rounded-3xl p-8 flex flex-col relative overflow-hidden group">
+                    <h3 className="text-xl font-orbitron font-bold text-white mb-8 flex items-center gap-3 relative z-10 tracking-widest">
+                        <span className="w-2 h-8 bg-gradient-to-b from-cyber-primary to-cyber-secondary block rounded-full" />
                         Biometric Analysis
                     </h3>
 
-                    <div className="h-64 w-full relative z-10">
+                    <div className="h-64 w-full relative z-10 mb-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-                                <PolarGrid stroke="#334155" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 12, fontFamily: 'monospace' }} />
                                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                                 <Radar
                                     name="Baseline"
                                     dataKey="B"
-                                    stroke="#00f3ff"
+                                    stroke="#3b82f6"
                                     strokeWidth={2}
-                                    fill="#00f3ff"
-                                    fillOpacity={0.1}
+                                    fill="#3b82f6"
+                                    fillOpacity={0.2}
                                 />
                                 <Radar
                                     name="Current Attempt"
                                     dataKey="A"
-                                    stroke={isBot ? '#ff00ff' : '#00ff9d'}
+                                    stroke={isBot ? '#ef4444' : '#22c55e'}
                                     strokeWidth={3}
-                                    fill={isBot ? '#ff00ff' : '#00ff9d'}
+                                    fill={isBot ? '#ef4444' : '#22c55e'}
                                     fillOpacity={0.3}
                                 />
                             </RadarChart>
                         </ResponsiveContainer>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-2 gap-4 text-xs font-mono text-gray-400">
-                        <div className="bg-white/5 p-3 rounded">
-                            <p className="text-cyber-primary">MOUSE_ENTROPY</p>
-                            <p className="text-xl text-white">{isBot ? '0.00' : '4.21'} <span className="text-gray-600">bits</span></p>
+                    <div className="grid grid-cols-2 gap-4 text-xs font-mono text-gray-400">
+                        <div className="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <p className="text-cyber-primary mb-1 tracking-wider">MOUSE_ENTROPY</p>
+                            <p className="text-2xl font-bold text-white">{isBot ? '0.00' : '4.21'} <span className="text-gray-500 text-sm">bits</span></p>
                         </div>
-                        <div className="bg-white/5 p-3 rounded relative z-10">
-                            <p className="text-cyber-primary">DWELL_VAR</p>
-                            <p className="text-xl text-white">{isBot ? '0ms' : '23ms'} <span className="text-gray-600">σ</span></p>
+                        <div className="bg-black/30 p-4 rounded-xl border border-white/5 relative z-10">
+                            <p className="text-cyber-primary mb-1 tracking-wider">DWELL_VAR</p>
+                            <p className="text-2xl font-bold text-white">{isBot ? '0ms' : '23ms'} <span className="text-gray-500 text-sm">σ</span></p>
                         </div>
                     </div>
-
-                    {/* Removed Liquid Glass Explanation Hover */}
                 </div>
             </motion.div>
 
@@ -333,25 +327,25 @@ export const Dashboard = ({ result, onRetry }: DashboardProps) => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.3 }}
                 className="mt-8 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8"
             >
                 <button
                     onClick={triggerActiveDefense}
-                    className="group bg-red-900/20 border border-red-500/50 hover:bg-red-900/40 hover:border-red-500 rounded-xl p-6 flex flex-col items-center justify-center backdrop-blur-sm transition-all cursor-pointer"
+                    className="group glass-panel border border-red-500/20 hover:border-red-500/50 hover:bg-red-900/20 rounded-3xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.1)] hover:shadow-[0_0_30px_rgba(239,68,68,0.3)]"
                 >
-                    <ShieldAlert className="w-12 h-12 text-red-500 mb-2 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-xl font-orbitron text-red-400">ACTIVE DEFENSE</h3>
-                    <p className="text-xs text-red-300/60 font-mono mt-2 text-center">TRIGGER INTRUDER PROTOCOL</p>
+                    <ShieldAlert className="w-14 h-14 text-red-500 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                    <h3 className="text-2xl font-orbitron font-bold text-red-400 tracking-widest">ACTIVE DEFENSE</h3>
+                    <p className="text-sm text-red-400/60 font-mono mt-2 tracking-widest text-center">TRIGGER INTRUDER PROTOCOL</p>
                 </button>
 
                 <button
                     onClick={triggerSafetyProtocol}
-                    className="group bg-orange-900/20 border border-orange-500/50 hover:bg-orange-900/40 hover:border-orange-500 rounded-xl p-6 flex flex-col items-center justify-center backdrop-blur-sm transition-all cursor-pointer"
+                    className="group glass-panel border border-orange-500/20 hover:border-orange-500/50 hover:bg-orange-900/20 rounded-3xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer shadow-[0_0_15px_rgba(249,115,22,0.1)] hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]"
                 >
-                    <ShieldCheck className="w-12 h-12 text-orange-500 mb-2 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-xl font-orbitron text-orange-400">SAFETY PROTOCOL</h3>
-                    <p className="text-xs text-orange-300/60 font-mono mt-2 text-center">INITIATE SAFE MODE</p>
+                    <ShieldCheck className="w-14 h-14 text-orange-500 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                    <h3 className="text-2xl font-orbitron font-bold text-orange-400 tracking-widest">SAFETY PROTOCOL</h3>
+                    <p className="text-sm text-orange-400/60 font-mono mt-2 tracking-widest text-center">INITIATE SAFE MODE</p>
                 </button>
             </motion.div>
         </div>

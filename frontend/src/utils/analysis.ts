@@ -194,15 +194,27 @@ export const compareFeatures = (profile: FeatureVector, sample: FeatureVector): 
     const dFlight = Math.abs(profile.meanFlightTime - sample.meanFlightTime) / (profile.stdFlightTime + 1);
     const dEntropy = Math.abs(profile.mouseEntropy - sample.mouseEntropy);
     const dVelocity = Math.abs(profile.mouseVelocityMean - sample.mouseVelocityMean) / (profile.mouseVelocityMean + 1);
+    
+    // New high-accuracy features
+    const dPathStraightness = Math.abs(profile.pathStraightness - sample.pathStraightness);
+    const dJerk = Math.abs(profile.jerkVariance - sample.jerkVariance) / (profile.jerkVariance + 0.1);
+    const dScroll = Math.abs(profile.scrollBurstiness - sample.scrollBurstiness) / (profile.scrollBurstiness + 0.1);
 
-    // Penalize robotic straight lines and uniform speeds
-    const roboticPenalty = (sample.pathStraightness > 0.95 ? 2.0 : 0) + (sample.jerkVariance < 0.01 ? 2.0 : 0);
+    // Penalize robotic straight lines and uniform speeds heavily
+    const roboticPenalty = (sample.pathStraightness > 0.95 ? 5.0 : 0) + (sample.jerkVariance < 0.01 ? 5.0 : 0);
 
-    // Weighted distance (Highly sensitive to human-to-human timing/speed baseline differences)
-    const distance = (dDwell * 0.35) + (dFlight * 0.25) + (dEntropy * 0.20) + (dVelocity * 0.20) + roboticPenalty;
+    // Re-balanced weighted distance with all 7 dimensions
+    const distance = 
+        (dDwell * 0.25) + 
+        (dFlight * 0.20) + 
+        (dEntropy * 0.15) + 
+        (dVelocity * 0.15) + 
+        (dPathStraightness * 0.10) +
+        (dJerk * 0.10) +
+        (dScroll * 0.05) + 
+        roboticPenalty;
 
-    // Decreased the multiplier from 30 to 20 to make the model more forgiving.
-    // This is tight enough to block impersonators but forgiving enough for the user's natural daily variance.
-    const score = Math.max(0, 100 - (distance * 20));
+    // Multiplier adjusted for the new distance scale
+    const score = Math.max(0, 100 - (distance * 15));
     return score;
 }

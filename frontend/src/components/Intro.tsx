@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, Mail, Phone, Server, MapPin } from 'lucide-react';
+import { ShieldAlert, Mail, Phone, Server, MapPin, ChevronRight, Lock } from 'lucide-react';
 
 export interface AlertConfig {
     email: string;
@@ -17,7 +17,7 @@ export const Intro = ({ onStart }: IntroProps) => {
     const [config, setConfig] = useState<AlertConfig>({
         email: '',
         phone: '',
-        carrier: 'vtext.com' // Default to Verizon
+        carrier: 'vtext.com'
     });
     const [isConfiguring, setIsConfiguring] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export const Intro = ({ onStart }: IntroProps) => {
         }
 
         if (!config.email || !config.phone) {
-            setError("Destination email and phone number are required for security protocols.");
+            setError("Destination email and phone number are required.");
             return;
         }
 
@@ -76,21 +76,27 @@ export const Intro = ({ onStart }: IntroProps) => {
     };
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 p-4">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b')] bg-cover bg-center opacity-20 fixed"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-cyber-dark via-transparent to-cyber-dark fixed"></div>
-
+        <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 p-6">
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1 }}
-                className="z-20 w-full max-w-md flex flex-col items-center"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="z-20 w-full max-w-lg flex flex-col items-center"
             >
-                <div className="text-center mb-8">
-                    <h1 className="text-5xl md:text-7xl font-orbitron font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyber-primary to-cyber-secondary filter drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
+                <div className="text-center mb-10 flex flex-col items-center">
+                    <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                        className="w-20 h-20 mb-6 rounded-2xl glass-panel flex items-center justify-center border border-cyber-primary/30 shadow-[0_0_30px_rgba(59,130,246,0.3)]"
+                    >
+                        <Lock className="text-cyber-primary w-10 h-10" />
+                    </motion.div>
+                    
+                    <h1 className="text-4xl md:text-6xl font-orbitron font-bold gradient-text pb-2">
                         NEURO-MIMESIS
                     </h1>
-                    <p className="mt-4 text-lg md:text-xl text-cyber-light font-light tracking-widest uppercase">
+                    <p className="mt-3 text-sm md:text-base text-gray-400 font-light tracking-[0.2em] uppercase">
                         Cognitive Identity Verification
                     </p>
 
@@ -98,11 +104,11 @@ export const Intro = ({ onStart }: IntroProps) => {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                            className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-cyber-dark/80 border border-cyber-primary/30 rounded-full text-xs font-mono text-cyber-primary"
+                            transition={{ delay: 0.6 }}
+                            className="mt-8 inline-flex items-center gap-2 px-4 py-2 glass-panel rounded-full text-xs font-mono text-cyber-accent border border-cyber-accent/20 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
                         >
-                            <MapPin size={14} className="animate-pulse" />
-                            <span>NODE LOCATION DETECTED: {location.toUpperCase()}</span>
+                            <MapPin size={14} />
+                            <span>NODE LOCATION: {location.toUpperCase()}</span>
                         </motion.div>
                     )}
                 </div>
@@ -111,84 +117,85 @@ export const Intro = ({ onStart }: IntroProps) => {
                     {!showConfig ? (
                         <motion.button
                             key="init-btn"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20, filter: 'blur(5px)' }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={handleStart}
-                            className="group relative px-8 py-4 bg-transparent overflow-hidden rounded-none border border-cyber-primary text-cyber-primary font-orbitron font-bold uppercase tracking-wider hover:text-cyber-dark transition-colors duration-300 w-64"
+                            className="group flex items-center justify-between px-8 py-4 w-72 glass-panel rounded-full text-white font-orbitron font-semibold uppercase tracking-widest border border-white/10 hover:border-cyber-primary/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-300"
                         >
-                            <span className="absolute inset-0 w-full h-full bg-cyber-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-                            <span className="relative z-10">Initialize System</span>
+                            <span>Initialize</span>
+                            <ChevronRight className="w-5 h-5 text-cyber-primary group-hover:translate-x-1 transition-transform" />
                         </motion.button>
                     ) : (
                         <motion.div
                             key="config-form"
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className="w-full bg-cyber-dark/80 border border-cyber-secondary/50 p-6 rounded-xl backdrop-blur-xl shadow-[0_0_30px_rgba(255,0,85,0.1)]"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full glass-panel p-8 rounded-2xl border border-white/10"
                         >
-                            <div className="flex items-center gap-3 mb-6 border-b border-cyber-secondary/30 pb-4">
-                                <ShieldAlert className="text-cyber-secondary w-6 h-6 animate-pulse" />
-                                <h3 className="text-xl font-orbitron text-white">Alert Configuration</h3>
+                            <div className="flex items-center gap-3 mb-8 pb-4 border-b border-white/5">
+                                <ShieldAlert className="text-cyber-secondary w-6 h-6" />
+                                <h3 className="text-xl font-orbitron font-semibold text-white">Alert Configuration</h3>
                             </div>
 
-                            <p className="text-xs font-mono text-gray-400 mb-6 leading-relaxed">
-                                CRITICAL: Configure the emergency broadcast channels. These credentials are used strictly locally to dispatch photo-evidence and coordinates to your devices if the system is breached by an imposter.
+                            <p className="text-xs text-gray-400 mb-8 leading-relaxed font-light">
+                                Configure the emergency broadcast channels. These credentials dispatch photo-evidence and coordinates if the system is breached by an imposter.
                             </p>
 
-                            <div className="space-y-4 font-mono text-sm">
+                            <div className="space-y-5 text-sm">
                                 <div>
-                                    <label className="flex items-center gap-2 text-cyber-light/70 mb-1"><Mail size={14} /> Destination Email</label>
+                                    <label className="flex items-center gap-2 text-gray-300 mb-2 font-medium"><Mail size={14} className="text-cyber-primary"/> Destination Email</label>
                                     <input
                                         type="email" name="email" value={config.email} onChange={handleInputChange}
                                         placeholder="your.email@example.com"
-                                        className="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyber-primary focus:outline-none placeholder-gray-600"
+                                        className="w-full glass-input rounded-lg p-3"
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-5">
                                     <div>
-                                        <label className="flex items-center gap-2 text-cyber-light/70 mb-1"><Phone size={14} /> Phone Number</label>
+                                        <label className="flex items-center gap-2 text-gray-300 mb-2 font-medium"><Phone size={14} className="text-cyber-primary"/> Phone Number</label>
                                         <input
                                             type="text" name="phone" value={config.phone} onChange={handleInputChange}
                                             placeholder="5551234567"
-                                            className="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyber-primary focus:outline-none placeholder-gray-600"
+                                            className="w-full glass-input rounded-lg p-3"
                                         />
                                     </div>
                                     <div>
-                                        <label className="flex items-center gap-2 text-cyber-light/70 mb-1"><Server size={14} /> Carrier Setup</label>
+                                        <label className="flex items-center gap-2 text-gray-300 mb-2 font-medium"><Server size={14} className="text-cyber-primary"/> Carrier Setup</label>
                                         <select
                                             name="carrier" value={config.carrier} onChange={handleInputChange}
-                                            className="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyber-primary focus:outline-none"
+                                            className="w-full glass-input rounded-lg p-3"
                                         >
-                                            <option value="vtext.com">Verizon</option>
-                                            <option value="txt.att.net">AT&T</option>
-                                            <option value="tmomail.net">T-Mobile</option>
-                                            <option value="messaging.sprintpcs.com">Sprint</option>
+                                            <option value="vtext.com" className="bg-cyber-dark text-white">Verizon</option>
+                                            <option value="txt.att.net" className="bg-cyber-dark text-white">AT&T</option>
+                                            <option value="tmomail.net" className="bg-cyber-dark text-white">T-Mobile</option>
+                                            <option value="messaging.sprintpcs.com" className="bg-cyber-dark text-white">Sprint</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            {error && <div className="mt-4 p-2 bg-red-900/30 border border-red-500 rounded text-red-400 text-xs font-mono">{error}</div>}
+                            {error && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 p-3 bg-red-900/20 border border-red-500/30 rounded-lg text-red-400 text-xs font-mono">
+                                    {error}
+                                </motion.div>
+                            )}
 
-                            <button
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                                 onClick={handleStart}
                                 disabled={isConfiguring}
-                                className="mt-8 w-full group relative px-8 py-3 bg-cyber-secondary/20 overflow-hidden rounded border border-cyber-secondary text-cyber-secondary font-orbitron font-bold uppercase tracking-wider hover:text-black transition-colors duration-300 disabled:opacity-50"
+                                className="mt-8 w-full py-4 bg-gradient-to-r from-cyber-primary to-cyber-secondary rounded-lg text-white font-orbitron font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(139,92,246,0.4)] disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all"
                             >
-                                <span className="absolute inset-0 w-full h-full bg-cyber-secondary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
-                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                    {isConfiguring ? 'CONNECTING...' : 'ARM SYSTEM'}
-                                </span>
-                            </button>
+                                {isConfiguring ? 'CONNECTING...' : 'ARM SYSTEM'}
+                            </motion.button>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </motion.div>
-
-            <div className="fixed bottom-4 text-xs text-cyber-light/50 font-mono tracking-widest z-0 pointer-events-none">
-                SYSTEM STATUS: {showConfig ? 'AWAITING CONFIG' : 'ONLINE'} // BIOMETRIC SENSORS: STANDBY
-            </div>
         </div>
     );
 };

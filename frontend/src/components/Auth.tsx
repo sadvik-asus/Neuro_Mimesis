@@ -47,66 +47,72 @@ export const Auth = ({ onLogin, onRegister }: AuthProps) => {
                 setIsLoading(false);
             }
         } else {
-            // For registration, we pass credentials to App for Enrollment flow
             onRegister(username, password);
         }
     };
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 p-4">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 p-6">
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 className="w-full max-w-md"
             >
-                <div className="bg-cyber-dark/80 border border-cyber-primary/50 p-8 rounded-xl backdrop-blur-xl shadow-[0_0_30px_rgba(0,243,255,0.1)] relative overflow-hidden">
-                    {/* Animated Edge */}
+                <div className="glass-panel p-10 rounded-2xl relative overflow-hidden">
                     <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-cyber-primary/20 to-transparent w-[200%] h-1"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-cyber-primary/10 to-transparent w-[200%] h-1"
                         animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
                     />
 
-                    <div className="text-center mb-8">
-                        <ShieldCheck className="w-16 h-16 text-cyber-primary mx-auto mb-4 drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]" />
-                        <h2 className="text-3xl font-orbitron font-bold text-white tracking-widest">
+                    <div className="text-center mb-10 flex flex-col items-center">
+                        <motion.div 
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                            className="w-20 h-20 mb-6 rounded-2xl glass-panel flex items-center justify-center border border-cyber-primary/20 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                        >
+                            <ShieldCheck className="w-10 h-10 text-cyber-primary" />
+                        </motion.div>
+                        <h2 className="text-3xl font-orbitron font-bold gradient-text tracking-widest pb-1">
                             {isLogin ? 'SYSTEM ACCESS' : 'NEW MATRIX'}
                         </h2>
-                        <p className="text-cyber-light/60 font-mono text-xs mt-2 uppercase tracking-widest">
+                        <p className="text-gray-400 font-mono text-xs mt-3 uppercase tracking-[0.2em]">
                             {isLogin ? 'Authenticate Identity' : 'Calibrate Neural Profile'}
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-1">
-                            <label className="flex items-center gap-2 text-xs font-mono text-cyber-light/80 uppercase">
-                                <User size={14} /> Subject Designation
+                        <div className="space-y-2">
+                            <label className="flex items-center gap-2 text-xs font-mono text-gray-300 uppercase tracking-wide">
+                                <User size={14} className="text-cyber-primary"/> Subject Designation
                             </label>
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full bg-black/60 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-cyber-primary font-mono transition-colors"
+                                className="w-full glass-input rounded-xl p-4 text-sm tracking-wider"
                                 placeholder="Enter Username"
                             />
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="flex items-center gap-2 text-xs font-mono text-cyber-light/80 uppercase">
-                                <Key size={14} /> Encryption Key
+                        <div className="space-y-2">
+                            <label className="flex items-center gap-2 text-xs font-mono text-gray-300 uppercase tracking-wide">
+                                <Key size={14} className="text-cyber-primary"/> Encryption Key
                             </label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-black/60 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-cyber-primary font-mono transition-colors pr-10"
+                                    className="w-full glass-input rounded-xl p-4 text-sm tracking-wider pr-12"
                                     placeholder="Enter Password"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyber-primary transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -119,36 +125,38 @@ export const Auth = ({ onLogin, onRegister }: AuthProps) => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="bg-red-900/30 border border-red-500/50 p-3 rounded text-red-400 text-xs font-mono"
+                                    className="bg-red-900/20 border border-red-500/30 p-3 rounded-lg text-red-400 text-xs font-mono text-center"
                                 >
                                     {error}
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-4 bg-cyber-primary/10 border border-cyber-primary text-cyber-primary font-orbitron font-bold uppercase tracking-widest rounded hover:bg-cyber-primary hover:text-black transition-all duration-300 flex items-center justify-center gap-2"
+                            className="w-full py-4 mt-4 bg-gradient-to-r from-cyber-primary to-cyber-secondary rounded-xl text-white font-orbitron font-bold uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] transition-shadow disabled:opacity-50"
                         >
                             {isLoading ? (
                                 <span className="animate-pulse">PROCESSING...</span>
                             ) : isLogin ? (
-                                <><LogIn size={18} /> ENTER MATRIX</>
+                                <><LogIn size={20} /> ENTER MATRIX</>
                             ) : (
-                                <><UserPlus size={18} /> INITIALIZE SEQUENCE</>
+                                <><UserPlus size={20} /> INITIALIZE SEQUENCE</>
                             )}
-                        </button>
+                        </motion.button>
                     </form>
 
-                    <div className="mt-6 text-center border-t border-white/10 pt-6">
+                    <div className="mt-8 text-center border-t border-white/5 pt-6">
                         <button
                             type="button"
                             onClick={() => {
                                 setIsLogin(!isLogin);
                                 setError(null);
                             }}
-                            className="text-xs font-mono text-cyber-light/60 hover:text-cyber-primary transition-colors uppercase tracking-wider"
+                            className="text-xs font-mono text-gray-400 hover:text-cyber-primary transition-colors uppercase tracking-[0.1em]"
                         >
                             {isLogin ? 'Initiate New Registration Protocol' : 'Switch To Authentication Protocol'}
                         </button>

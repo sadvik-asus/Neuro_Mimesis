@@ -40,10 +40,28 @@ function App() {
     setView('dashboard');
   };
 
+  const handleLogout = () => {
+    setUserProfile(null);
+    setUsername("");
+    setPassword("");
+    setLastResult(null);
+    setView('intro');
+  };
+
   return (
-    <div className="min-h-screen bg-cyber-dark text-cyber-light selection:bg-cyber-secondary selection:text-white relative">
-      <div className="crt-scan" />
-      <div className="crt-flicker" />
+    <div 
+        className="min-h-screen text-cyber-light selection:bg-cyber-secondary selection:text-white relative" 
+        style={{ 
+            backgroundColor: '#090014',
+            backgroundImage: `
+                linear-gradient(rgba(255, 0, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(135deg, #090014 0%, #1a0033 50%, #001f3f 100%)
+            `,
+            backgroundSize: '40px 40px, 40px 40px, 100% 100%',
+            backgroundAttachment: 'fixed'
+        }}
+    >
       <MouseHeatmap active={true} />
 
       <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center">
@@ -61,7 +79,7 @@ function App() {
           />
         )}
         {view === 'dashboard' && lastResult && (
-          <Dashboard result={lastResult} onRetry={() => setView('verification')} />
+          <Dashboard result={lastResult} onRetry={() => setView('verification')} onLogout={handleLogout} />
         )}
       </div>
     </div>

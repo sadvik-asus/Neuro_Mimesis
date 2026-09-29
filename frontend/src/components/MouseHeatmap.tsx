@@ -45,9 +45,13 @@ export const MouseHeatmap = ({ active = true }: { active?: boolean }) => {
         const render = () => {
             if (!ctx || !canvas) return;
 
-            // Clear with slight fade for trails
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            // Fade existing trails without painting the background black
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Switch back to normal drawing mode
+            ctx.globalCompositeOperation = 'source-over';
 
             const points = pointsRef.current;
             if (points.length < 2) {
@@ -88,13 +92,13 @@ export const MouseHeatmap = ({ active = true }: { active?: boolean }) => {
                 }
             }
 
-            // Stroke the main path (Cyan for normal movement)
-            ctx.strokeStyle = `rgba(0, 243, 255, 0.4)`; // cyber-primary glow
-            ctx.lineWidth = 2;
+            // Stroke the main path (Barely visible whisper trace)
+            ctx.strokeStyle = `rgba(255, 0, 255, 0.05)`; // Extremely faint
+            ctx.lineWidth = 1; // Thin sharp line
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00f3ff';
+            ctx.shadowBlur = 0; // Removed glow entirely
+            ctx.shadowColor = 'transparent';
             ctx.stroke();
 
             animationFrameRef.current = requestAnimationFrame(render);
@@ -114,7 +118,6 @@ export const MouseHeatmap = ({ active = true }: { active?: boolean }) => {
         <canvas
             ref={canvasRef}
             className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000 ${active ? 'opacity-100' : 'opacity-0'}`}
-            style={{ mixBlendMode: 'screen' }}
         />
     );
 };
